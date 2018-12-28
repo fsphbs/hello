@@ -28,7 +28,9 @@ my.fn <- function(iCcy){
 
 fn.single <- function(iCcy, bank){
   
-  vCcy <- c('CHF', 'EUR', 'USD', 'GBP', 'YEN', 'CAD')
+  
+  
+  vCcy <- c('CHF', 'EUR', 'USD', 'GBP', 'JPY', 'CAD')
   vColor <- c('red2', 'dodgerblue3', 'seagreen', 'blue3', 'grey80', 'red4')
   pos.ccy <- vCcy %in% iCcy
   bar.col <- vColor[pos.ccy]
