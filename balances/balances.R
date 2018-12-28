@@ -1,7 +1,7 @@
 
 rm(list=ls())
 
-balances <- fread('data/current_balances.txt', sep = ';')
+balances <- fread('/FSP/My Documents/Analysis/Treasury/Balances/data/current_balances.txt', sep = ',')
 tickers <- fread('data/counterparts_list.csv')
 
 colnames(balances) <- c('dt', 'counterpart', 'acc.type', 'status', 'ccy', 'amnt')
@@ -26,6 +26,9 @@ dates.list <-  unique(balances$dt)
 neg.bal <- balances[status=='temporary_balance' & amnt < 0 & dt <= (dt %>% unique %>% extract(7))]
 if(nrow(neg.bal)!=0){dcast(data = neg.bal, formula = ccy + dt ~ ticker, fun.aggregate = sum, value.var = 'amnt') %>% print()}
 
+cat('\n')
+open.book <- balances[status=='open_bookings' & acc.type=='current' & amnt !=0 & dt <= (dt %>% unique %>% extract(1))]
+if(abs(open.book$amnt) %>% sum() > 0) { dcast(data = open.book, formula = ccy + dt ~ ticker, fun.aggregate = sum, value.var = 'amnt') %>% print()}
 
 dt <- balances[ccy=='GBP' & acc.type=='current' & status =='temporary_balance' & 
                  dt <= balances$dt %>% unique() %>% extract(14)]
