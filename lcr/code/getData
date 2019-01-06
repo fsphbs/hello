@@ -1,0 +1,105 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NPOI.SS.UserModel;
+using NPOI.HSSF.UserModel;
+using System.Data;
+
+namespace LCR_getData
+{
+    class Program
+    {
+        const int nRow_date = 2;
+        const int nCol_date = 13;
+        const int nCol_IDs = 10;
+        const int nCol_Amnts = 11;
+        const int nCol_WeightedAmnts = 22;
+
+        const int id_lcr = 270;
+
+        static void Main(string[] args)
+        {
+            try
+            {
+                string dir_name = "C:/Users/***/Documents/Analysis/HBS/Treasury/Liqudity/Invest/data/testFolder";
+
+                //DirectoryInfo currDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+                DirectoryInfo currDirectory = new DirectoryInfo(dir_name);
+
+                FileInfo[] Files = currDirectory.GetFiles("*.*");           //  Getting any file
+
+                /*
+                var sorted = from f in Files
+                             orderby new FileInfo(f.ToString()).CreationTime descending
+                             select f;
+                */
+
+
+                foreach (FileInfo file in Files.OrderBy(f => f.Name))   // can be CreationTime
+                //foreach(FileInfo n in sorted)
+                {
+                    Console.WriteLine("{0}", file.Name);
+                    //Console.WriteLine("{0}", n.Name);
+                }
+
+
+                string excelFilePath = "C:/Users/***/Documents/Analysis/HBS/Treasury/Liqudity/LCR/data/LCR_report.xls";
+                getData(dataFilePath: excelFilePath);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("You've got an error:");
+                Console.WriteLine(e.Message);
+
+                Console.ReadLine();
+            }
+        }
+
+        static void getData(string dataFilePath)
+        {
+            IWorkbook workbook;
+
+            DateTime iDate;
+
+            //string dataFilePath = "C:/Users/***/Documents/Analysis/HBS/Treasury/Liqudity/LCR/data/LCR_report.xls";
+            using (FileStream stream = new FileStream(dataFilePath, FileMode.Open, FileAccess.Read))
+            {
+                workbook = new HSSFWorkbook(stream);
+
+                ISheet sheet = workbook.GetSheetAt(0); // zero-based index of your target sheet
+
+                // get reporting date (iDate) to SNB
+                var dateRow = sheet.GetRow(nRow_date);
+                var dateCell = dateRow.GetCell(nCol_date).ToString();
+
+                    int iDay = Convert.ToInt32(dateCell.Substring(0, 2));
+                    int iMonth = Convert.ToInt32(dateCell.Substring(3, 2));
+                    int iYear = Convert.ToInt32(dateCell.Substring(6, 4));
+
+                iDate = new DateTime(year: iYear, month: iMonth, day: iDay);
+
+                int i = 0;
+                do
+                {
+                    var id = sheet.GetRow(i).GetCell(nCol_IDs).ToString();
+
+                    if (id != "")
+                    {
+                        var amnt = sheet.GetRow(i).GetCell(nCol_Amnts).NumericCellValue;
+                        var weighted_amnt = sheet.GetRow(i).GetCell(nCol_WeightedAmnts).NumericCellValue;
+
+                        Console.WriteLine("{0} {1} {2} {3}", i, id, amnt, weighted_amnt);
+                    }
+
+                    i++;
+                } while (sheet.GetRow(i).GetCell(nCol_IDs).ToString() != id_lcr.ToString());
+
+                var lcr = sheet.GetRow(i).GetCell(nCol_Amnts).ToString().Replace("%", "");      // good indic but missing decimals
+            }
+        }
+    }
+}
