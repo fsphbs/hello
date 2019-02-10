@@ -22,6 +22,9 @@ mm <- mm[pos,]
 
 fidu <- dat[asset %like% 'Fidu' & order.type %like% 'Open']
 
+
+###
+
 fn <- function(iDate, mm.inst){
   iDt <- as.Date(iDate)
   res.tmp <- mm.inst[ maturity >= iDt & trade.date <= iDt]
@@ -33,5 +36,10 @@ fn <- function(iDate, mm.inst){
   return(res.tmp)
 }
 
-rcp <- dcast(data = bla, formula = ccy ~ mm.type, fun.aggregate = sum, value.var = 'amnt')
+rpt.date <- as.Date('2019-02-04')
+dt.mm.rpt <- fn(iDate = rpt.date, mm.inst = mm)
+rpt <- dcast(data = dt.mm.rpt, formula = ccy ~ mm.type, fun.aggregate = sum, value.var = 'amnt')
+
+write.table(x = rpt, 'clipboard', sep = ',', row.names = F)
+
 
