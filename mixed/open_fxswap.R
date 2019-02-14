@@ -61,3 +61,12 @@ if(FALSE){
 
 
 dt.swap <- dt.swap[, -c(6:11)]
+
+
+
+a <- dt.swap[Value_date.far >= as.Date('2018-12-31') & Workflow_status == 'Done', cbind( ccy = base, amnt = near.buy.amnt, 'loan')] %>% data.table()
+b <- dt.swap[Value_date.far >= as.Date('2018-12-31') & Workflow_status == 'Done', cbind(ccy = term, amnt = near.sell.amnt, 'deposit')] %>% data.table()
+bla <- rbind(a,b)
+bla$amnt <- bla$amnt %>% as.numeric()
+
+dcast(data = bla, formula = ccy ~ V3, fun.aggregate = sum, value.var = 'amnt')
