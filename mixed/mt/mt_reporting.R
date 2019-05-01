@@ -11,5 +11,3 @@ mt.103$quarter <- quarter(mt.103$trade.date) %>% paste0(year(mt.103$trade.date)-
 mt.103$yr <- mt.103$trade.date %>% year()
 
 
-ggplot(data = mt.103[ccy=='EUR'], aes(x = week, color = yr %>% as.factor )) + 
-  geom_line(stat = 'count') + theme_minimal()
