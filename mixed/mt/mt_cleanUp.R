@@ -24,8 +24,5 @@ for(i in 1:3){
 }
 
 
-mt.103 <- dt.mt[SWIFT %like% 'SWIFT.103']
-
-
-save(mt.103, file = 'data/mt_103.Rda')
+save(file = 'data/dt.mt.RDA', dt.mt)
 
